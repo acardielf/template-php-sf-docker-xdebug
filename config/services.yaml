@@ -1,0 +1,44 @@
+parameters:
+    app.sender_email: '%env(MAILER_SENDER_EMAIL)%'
+    app.sender_name: '%env(MAILER_SENDER_NAME)%'
+
+services:
+    _defaults:
+        autowire: true
+        autoconfigure: true
+        bind:
+            # Inject the high-priority bus into handlers that need to enqueue email/notifications.
+            # Use named autowiring: MessageBusInterface $asyncBus
+            Symfony\Component\Messenger\MessageBusInterface $asyncBus: '@messenger.bus.async_high_priority'
+
+    # Register all classes in src/ as services
+    App\:
+        resource: '../src/'
+        exclude:
+            - '../src/Domain/Entity/'
+            - '../src/Domain/Event/'
+            - '../src/Domain/Exception/'
+            - '../src/Domain/ValueObject/'
+            - '../src/Infrastructure/Persistence/Entity/'
+            - '../src/Infrastructure/Persistence/Migration/'
+            - '../src/Application/Exception/'
+            - '../src/Infrastructure/Exception/'
+            - '../src/Infrastructure/Messenger/Message/'
+            - '../src/Kernel.php'
+
+    # Email handler — inject sender identity from parameters
+    App\Infrastructure\Messenger\Handler\SendEmailMessageHandler:
+        arguments:
+            $senderEmail: '%app.sender_email%'
+            $senderName: '%app.sender_name%'
+
+    # Exception subscriber — inject debug flag from kernel
+    App\Infrastructure\EventSubscriber\ExceptionSubscriber:
+        arguments:
+            $debug: '%kernel.debug%'
+        tags:
+            - { name: kernel.event_subscriber }
+
+    # Domain repository bindings — wire interfaces to concrete implementations:
+    # App\Domain\Repository\UserRepositoryInterface:
+    #     class: App\Infrastructure\Repository\DoctrineUserRepository

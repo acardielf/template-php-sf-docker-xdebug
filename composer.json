@@ -1,0 +1,123 @@
+{
+    "name": "acardiel/php-sf-docker-template",
+    "description": "Symfony PHP 8.5 template with hexagonal architecture, Docker, Redis, and full toolchain",
+    "type": "project",
+    "license": "MIT",
+    "minimum-stability": "stable",
+    "prefer-stable": true,
+    "require": {
+        "php": "^8.5",
+        "ext-ctype": "*",
+        "ext-iconv": "*",
+        "ext-intl": "*",
+        "ext-mbstring": "*",
+        "ext-pdo": "*",
+        "ext-redis": "*",
+        "doctrine/doctrine-bundle": "^2.13",
+        "doctrine/doctrine-migrations-bundle": "^3.4",
+        "doctrine/orm": "^3.3",
+        "nelmio/api-doc-bundle": "^4.28",
+        "symfony/asset": "7.3.*",
+        "symfony/asset-mapper": "7.3.*",
+        "symfony/console": "7.3.*",
+        "symfony/dotenv": "7.3.*",
+        "symfony/flex": "^2",
+        "symfony/framework-bundle": "7.3.*",
+        "symfony/http-client": "7.3.*",
+        "symfony/mailer": "7.3.*",
+        "symfony/messenger": "7.3.*",
+        "symfony/monolog-bundle": "^3.10",
+        "symfony/runtime": "7.3.*",
+        "symfony/security-bundle": "7.3.*",
+        "symfony/serializer": "7.3.*",
+        "symfony/translation": "7.3.*",
+        "symfony/twig-bundle": "7.3.*",
+        "symfony/uid": "7.3.*",
+        "symfony/validator": "7.3.*",
+        "symfony/yaml": "7.3.*",
+        "twig/extra-bundle": "^3.12",
+        "twig/twig": "^3.14"
+    },
+    "require-dev": {
+        "behat/behat": "^3.17",
+        "friends-of-behat/symfony-extension": "^2.5",
+        "friends-of-behat/mink-extension": "^2.7",
+        "friends-of-behat/mink-browserkit-driver": "^1.6",
+        "phpstan/phpstan": "^2.1",
+        "phpstan/phpstan-doctrine": "^2.0",
+        "phpstan/phpstan-symfony": "^2.0",
+        "phpstan/extension-installer": "^1.4",
+        "phpunit/phpunit": "^11.5",
+        "rector/rector": "^2.0",
+        "symfony/browser-kit": "7.3.*",
+        "symfony/css-selector": "7.3.*",
+        "symfony/debug-bundle": "7.3.*",
+        "symfony/maker-bundle": "^1.62",
+        "symfony/phpunit-bridge": "^7.3",
+        "symfony/stopwatch": "7.3.*",
+        "symfony/web-profiler-bundle": "7.3.*",
+        "friendsofphp/php-cs-fixer": "^3.71",
+        "doctrine/doctrine-fixtures-bundle": "^3.7"
+    },
+    "config": {
+        "allow-plugins": {
+            "php-http/discovery": true,
+            "symfony/flex": true,
+            "symfony/runtime": true,
+            "phpstan/extension-installer": true
+        },
+        "sort-packages": true,
+        "platform": {
+            "php": "8.5.0"
+        }
+    },
+    "autoload": {
+        "psr-4": {
+            "App\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "App\\Tests\\": "tests/",
+            "App\\DataFixtures\\": "src/Infrastructure/DataFixtures/"
+        }
+    },
+    "replace": {
+        "symfony/polyfill-ctype": "*",
+        "symfony/polyfill-iconv": "*",
+        "symfony/polyfill-php72": "*",
+        "symfony/polyfill-php73": "*",
+        "symfony/polyfill-php74": "*",
+        "symfony/polyfill-php80": "*",
+        "symfony/polyfill-php81": "*",
+        "symfony/polyfill-php82": "*",
+        "symfony/polyfill-php83": "*"
+    },
+    "scripts": {
+        "auto-scripts": {
+            "cache:clear": "symfony-cmd",
+            "assets:install %PUBLIC_DIR%": "symfony-cmd"
+        },
+        "post-install-cmd": ["@auto-scripts"],
+        "post-update-cmd": ["@auto-scripts"],
+        "test": "php bin/phpunit",
+        "test:coverage": "php bin/phpunit --coverage-clover var/coverage/clover.xml --log-junit var/coverage/junit.xml",
+        "test:behat": "vendor/bin/behat --format=progress",
+        "phpstan": "vendor/bin/phpstan analyse --memory-limit=512M",
+        "cs:check": "vendor/bin/php-cs-fixer fix --dry-run --diff",
+        "cs:fix": "vendor/bin/php-cs-fixer fix",
+        "rector:check": "vendor/bin/rector process --dry-run",
+        "rector:fix": "vendor/bin/rector process",
+        "quality": ["@phpstan", "@cs:check", "@rector:check"],
+        "quality:fix": ["@cs:fix", "@rector:fix"]
+    },
+    "conflict": {
+        "symfony/symfony": "*"
+    },
+    "extra": {
+        "symfony": {
+            "allow-contrib": false,
+            "require": "7.3.*"
+        }
+    }
+}

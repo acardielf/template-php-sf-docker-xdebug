@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome!</title>
+    <style>
+        body { font-family: sans-serif; background: #f9fafb; margin: 0; padding: 0; }
+        .container { max-width: 600px; margin: 40px auto; background: #fff; border-radius: 8px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,.1); }
+        .header { background: #2563eb; color: #fff; padding: 32px 40px; }
+        .header h1 { margin: 0; font-size: 24px; font-weight: 700; }
+        .body { padding: 32px 40px; color: #374151; line-height: 1.6; }
+        .footer { padding: 16px 40px; background: #f3f4f6; color: #9ca3af; font-size: 12px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Welcome, {{ user_name }}!</h1>
+        </div>
+        <div class="body">
+            <p>Your account has been created successfully.</p>
+            <p>You can now log in and start using the application.</p>
+        </div>
+        <div class="footer">
+            <p>This email was sent automatically. Please do not reply.</p>
+        </div>
+    </div>
+</body>
+</html>

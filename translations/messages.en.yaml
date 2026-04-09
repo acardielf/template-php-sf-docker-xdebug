@@ -1,0 +1,13 @@
+# English translations — this is the default locale
+# Add your translation keys here in dot notation
+
+app:
+    name: 'Application'
+
+error:
+    not_found: 'The requested resource was not found.'
+    validation: 'The data provided is invalid.'
+    server: 'An unexpected error occurred. Please try again later.'
+
+health:
+    status_ok: 'Application is running.'

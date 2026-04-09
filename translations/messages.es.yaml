@@ -1,0 +1,11 @@
+# Spanish translations
+app:
+    name: 'Aplicación'
+
+error:
+    not_found: 'El recurso solicitado no fue encontrado.'
+    validation: 'Los datos proporcionados no son válidos.'
+    server: 'Ocurrió un error inesperado. Por favor, inténtelo de nuevo más tarde.'
+
+health:
+    status_ok: 'La aplicación está en funcionamiento.'

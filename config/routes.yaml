@@ -1,0 +1,10 @@
+controllers:
+    resource:
+        path: ../src/Infrastructure/Controller/
+        namespace: App\Infrastructure\Controller
+    type: attribute
+
+# API documentation route
+nelmio_api_doc:
+    resource: '@NelmioApiDocBundle/config/routes.xml'
+    prefix: /api

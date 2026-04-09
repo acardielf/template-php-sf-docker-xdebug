@@ -1,0 +1,47 @@
+framework:
+    messenger:
+        # Dead-letter queue — messages land here after exhausting retries
+        failure_transport: failed
+
+        transports:
+            # High-priority queue: emails, notifications, time-sensitive tasks.
+            # Worker: messenger:consume async_high_priority
+            async_high_priority:
+                dsn: '%env(MESSENGER_TRANSPORT_DSN)%'
+                options:
+                    # Redis stream name (separate from the general queue)
+                    stream: messages_high_priority
+                    group: symfony
+                retry_strategy:
+                    max_retries: 5
+                    delay: 500        # ms before first retry
+                    multiplier: 2     # doubles each retry: 0.5s → 1s → 2s → 4s → 8s
+                    max_delay: 30000  # cap at 30s
+
+            # General async queue: background tasks, reports, non-urgent operations.
+            # Worker: messenger:consume async
+            async:
+                dsn: '%env(MESSENGER_TRANSPORT_DSN)%'
+                options:
+                    stream: messages_async
+                    group: symfony
+                retry_strategy:
+                    max_retries: 3
+                    delay: 1000
+                    multiplier: 2
+                    max_delay: 0
+
+            # Dead-letter transport — inspect failed messages with:
+            # bin/console messenger:failed:show
+            # bin/console messenger:failed:retry
+            failed:
+                dsn: 'doctrine://default?queue_name=failed'
+                retry_strategy:
+                    max_retries: 0
+
+        routing:
+            # Infrastructure async messages (email, notifications)
+            'App\Infrastructure\Messenger\Message\SendEmailMessage': async_high_priority
+
+            # Add your own message routings here:
+            # 'App\Application\Command\SomeHeavyCommand': async

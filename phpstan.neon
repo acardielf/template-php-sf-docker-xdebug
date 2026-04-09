@@ -1,0 +1,27 @@
+includes:
+    - vendor/phpstan/phpstan-symfony/extension.neon
+    - vendor/phpstan/phpstan-symfony/rules.neon
+    - vendor/phpstan/phpstan-doctrine/extension.neon
+    - vendor/phpstan/phpstan-doctrine/rules.neon
+
+parameters:
+    level: 9
+    paths:
+        - src
+        - tests
+    excludePaths:
+        - src/Infrastructure/DataFixtures
+        - var
+    symfony:
+        containerXmlPath: var/cache/dev/App_KernelDevDebugContainer.xml
+        consoleApplicationLoader: tests/bootstrap_phpstan.php
+    doctrine:
+        objectManagerLoader: tests/bootstrap_doctrine.php
+    checkMissingIterableValueType: true
+    checkGenericClassInNonGenericObjectType: true
+    treatPhpDocTypesAsCertain: true
+    reportUnmatchedIgnoredErrors: false
+    ignoreErrors:
+        - '#Unsafe usage of new static#'
+    parallel:
+        maximumNumberOfProcesses: 4

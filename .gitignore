@@ -1,0 +1,40 @@
+###> symfony/framework-bundle ###
+/.env.local
+/.env.local.php
+/.env.*.local
+/config/secrets/prod/prod.decrypt.private.php
+/public/bundles/
+/var/
+/vendor/
+###< symfony/framework-bundle ###
+
+###> phpunit/phpunit ###
+/phpunit.xml
+.phpunit.result.cache
+###< phpunit/phpunit ###
+
+###> php-cs-fixer ###
+/.php-cs-fixer.php
+###< php-cs-fixer (keep only if you want to ignore local override) ###
+
+# IDE
+/.idea/
+/.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Node
+/node_modules/
+
+# Docker
+.env
+
+# Coverage reports
+/var/coverage/
+
+# SonarQube
+.sonar/

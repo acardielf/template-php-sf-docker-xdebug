@@ -1,0 +1,18 @@
+default:
+    suites:
+        default:
+            contexts:
+                - FeatureContext
+                - App\Tests\Behat\ApiContext
+
+    extensions:
+        FriendsOfBehat\SymfonyExtension:
+            bootstrap: tests/bootstrap.php
+            kernel:
+                class: App\Kernel
+
+    formatters:
+        progress: ~
+
+    gherkin:
+        cache: ~
