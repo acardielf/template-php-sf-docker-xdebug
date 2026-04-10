@@ -47,7 +47,7 @@ echo "✔ PHPStan passed."
 
 # 3. Rector — check for refactoring suggestions
 echo "[3/4] Rector..."
-${PHP_CMD} ${VENDOR_BIN}/rector process --dry-run --quiet
+${PHP_CMD} ${VENDOR_BIN}/rector process --dry-run
 if [ $? -ne 0 ]; then
     echo "❌ Rector found issues. Run 'composer rector:fix' to auto-fix."
     exit 1

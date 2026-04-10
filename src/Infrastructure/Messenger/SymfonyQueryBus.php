@@ -17,26 +17,24 @@ use Throwable;
  * Wraps Symfony's MessageBus and translates between the application
  * port (QueryBusInterface) and the framework adapter.
  */
-final class SymfonyQueryBus implements QueryBusInterface
+final readonly class SymfonyQueryBus implements QueryBusInterface
 {
     public function __construct(
-        private readonly MessageBusInterface $queryBus
+        private MessageBusInterface $messageBus,
     ) {
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @throws Throwable When query handling fails
      */
     public function ask(QueryInterface $query): mixed
     {
         try {
-            $envelope = $this->queryBus->dispatch($query);
+            $envelope = $this->messageBus->dispatch($query);
             /** @var HandledStamp|null $handledStamp */
             $handledStamp = $envelope->last(HandledStamp::class);
 
-            if ($handledStamp === null) {
+            if (null === $handledStamp) {
                 return null;
             }
 

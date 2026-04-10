@@ -20,16 +20,16 @@ final class ExternalServiceException extends InfrastructureException
     /**
      * Creates an exception for a failed external service call.
      *
-     * @param string         $service  Name of the external service (e.g. "Stripe", "Twilio")
-     * @param string         $reason   Short description of what went wrong
-     * @param Throwable|null $previous The original underlying exception
+     * @param string         $service   Name of the external service (e.g. "Stripe", "Twilio")
+     * @param string         $reason    Short description of what went wrong
+     * @param Throwable|null $throwable The original underlying exception
      */
-    public static function forService(string $service, string $reason, ?Throwable $previous = null): self
+    public static function forService(string $service, string $reason, ?Throwable $throwable = null): self
     {
         return new self(
             sprintf('External service "%s" failed: %s', $service, $reason),
             0,
-            $previous
+            $throwable
         );
     }
 }

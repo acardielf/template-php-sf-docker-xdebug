@@ -11,9 +11,6 @@ use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 
-/**
- * @covers \App\Domain\ValueObject\Uuid
- */
 #[CoversClass(Uuid::class)]
 final class UuidTest extends TestCase
 {
@@ -45,6 +42,7 @@ final class UuidTest extends TestCase
     {
         $this->expectException(InvalidArgumentException::class);
 
+        // @phpstan-ignore argument.type
         Uuid::fromString($invalid);
     }
 
@@ -52,21 +50,21 @@ final class UuidTest extends TestCase
     public function itChecksEqualityCorrectly(): void
     {
         $uuidString = '550e8400-e29b-41d4-a716-446655440000';
-        $a = Uuid::fromString($uuidString);
+        $uuid = Uuid::fromString($uuidString);
         $b = Uuid::fromString($uuidString);
         $c = Uuid::generate();
 
-        self::assertTrue($a->equals($b));
-        self::assertFalse($a->equals($c));
+        self::assertTrue($uuid->equals($b));
+        self::assertFalse($uuid->equals($c));
     }
 
     #[Test]
     public function itGeneratesUniqueValues(): void
     {
-        $a = Uuid::generate();
+        $uuid = Uuid::generate();
         $b = Uuid::generate();
 
-        self::assertFalse($a->equals($b));
+        self::assertFalse($uuid->equals($b));
     }
 
     /**

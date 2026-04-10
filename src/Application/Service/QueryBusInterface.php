@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Application\Service;
 
 use App\Application\Query\QueryInterface;
+use Throwable;
 
 /**
  * Query bus port (interface).
@@ -22,7 +23,7 @@ interface QueryBusInterface
      *
      * @return mixed The query result
      *
-     * @throws \Throwable When query handling fails
+     * @throws Throwable When query handling fails
      */
     public function ask(QueryInterface $query): mixed;
 }

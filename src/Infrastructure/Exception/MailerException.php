@@ -20,14 +20,14 @@ final class MailerException extends InfrastructureException
      * Creates an exception for a failed email send attempt.
      *
      * @param string         $recipient The intended recipient address
-     * @param Throwable|null $previous  The original mailer exception
+     * @param Throwable|null $throwable The original mailer exception
      */
-    public static function failedToSend(string $recipient, ?Throwable $previous = null): self
+    public static function failedToSend(string $recipient, ?Throwable $throwable = null): self
     {
         return new self(
             sprintf('Failed to send email to "%s".', $recipient),
             0,
-            $previous
+            $throwable
         );
     }
 }

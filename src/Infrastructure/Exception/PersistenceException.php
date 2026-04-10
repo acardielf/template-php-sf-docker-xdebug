@@ -22,16 +22,16 @@ final class PersistenceException extends InfrastructureException
      *
      * @param string         $operation The persistence operation that failed (e.g. "save", "find", "delete")
      * @param class-string   $entity    The entity class involved in the operation
-     * @param Throwable|null $previous  The original database exception
+     * @param Throwable|null $throwable The original database exception
      */
-    public static function forOperation(string $operation, string $entity, ?Throwable $previous = null): self
+    public static function forOperation(string $operation, string $entity, ?Throwable $throwable = null): self
     {
         $shortName = substr(strrchr($entity, '\\') ?: $entity, 1);
 
         return new self(
             sprintf('Persistence error during "%s" on entity "%s".', $operation, $shortName),
             0,
-            $previous
+            $throwable
         );
     }
 }

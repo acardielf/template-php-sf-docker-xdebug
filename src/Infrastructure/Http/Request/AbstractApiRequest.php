@@ -28,14 +28,14 @@ abstract class AbstractApiRequest
      */
     protected array $data = [];
 
-    private ConstraintViolationListInterface $violations;
+    private readonly ConstraintViolationListInterface $constraintViolationList;
 
     public function __construct(
         private readonly Request $request,
-        private readonly ValidatorInterface $validator
+        private readonly ValidatorInterface $validator,
     ) {
         $this->data = $this->decodeBody();
-        $this->violations = $this->validator->validate($this);
+        $this->constraintViolationList = $this->validator->validate($this);
     }
 
     /**
@@ -43,7 +43,7 @@ abstract class AbstractApiRequest
      */
     public function isValid(): bool
     {
-        return $this->violations->count() === 0;
+        return 0 === $this->constraintViolationList->count();
     }
 
     /**
@@ -51,7 +51,7 @@ abstract class AbstractApiRequest
      */
     public function getViolations(): ConstraintViolationListInterface
     {
-        return $this->violations;
+        return $this->constraintViolationList;
     }
 
     /**
@@ -71,7 +71,7 @@ abstract class AbstractApiRequest
     {
         $content = $this->request->getContent();
 
-        if ($content === '') {
+        if ('' === $content) {
             return [];
         }
 

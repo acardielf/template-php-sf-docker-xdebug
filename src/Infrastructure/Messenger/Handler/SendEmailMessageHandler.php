@@ -24,52 +24,52 @@ use Symfony\Component\Mime\Address;
  * `failed` transport for manual inspection.
  */
 #[AsMessageHandler(fromTransport: 'async_high_priority')]
-final class SendEmailMessageHandler
+final readonly class SendEmailMessageHandler
 {
     public function __construct(
-        private readonly MailerInterface $mailer,
-        private readonly LoggerInterface $logger,
-        private readonly string $senderEmail,
-        private readonly string $senderName,
+        private MailerInterface $mailer,
+        private LoggerInterface $logger,
+        private string $senderEmail,
+        private string $senderName,
     ) {
     }
 
     /**
      * Composes a Twig-templated email from the message payload and sends it.
      *
-     * @param SendEmailMessage $message The message carrying recipient, subject, template, and context
+     * @param SendEmailMessage $sendEmailMessage The message carrying recipient, subject, template, and context
      *
      * @throws MailerException When the mailer transport fails to deliver the email
      */
-    public function __invoke(SendEmailMessage $message): void
+    public function __invoke(SendEmailMessage $sendEmailMessage): void
     {
-        $email = (new TemplatedEmail())
+        $templatedEmail = new TemplatedEmail()
             ->from(new Address($this->senderEmail, $this->senderName))
-            ->to(new Address($message->recipientEmail, $message->recipientName))
-            ->subject($message->subject)
-            ->htmlTemplate(sprintf('email/%s', $message->template))
-            ->context($message->context);
+            ->to(new Address($sendEmailMessage->recipientEmail, $sendEmailMessage->recipientName))
+            ->subject($sendEmailMessage->subject)
+            ->htmlTemplate(sprintf('email/%s', $sendEmailMessage->template))
+            ->context($sendEmailMessage->context);
 
-        if ($message->replyTo !== null) {
-            $email->replyTo($message->replyTo);
+        if (null !== $sendEmailMessage->replyTo) {
+            $templatedEmail->replyTo($sendEmailMessage->replyTo);
         }
 
         try {
-            $this->mailer->send($email);
+            $this->mailer->send($templatedEmail);
 
             $this->logger->info('Email sent successfully.', [
-                'recipient' => $message->recipientEmail,
-                'subject' => $message->subject,
-                'template' => $message->template,
+                'recipient' => $sendEmailMessage->recipientEmail,
+                'subject' => $sendEmailMessage->subject,
+                'template' => $sendEmailMessage->template,
             ]);
         } catch (TransportExceptionInterface $e) {
             $this->logger->error('Failed to send email.', [
-                'recipient' => $message->recipientEmail,
-                'subject' => $message->subject,
+                'recipient' => $sendEmailMessage->recipientEmail,
+                'subject' => $sendEmailMessage->subject,
                 'error' => $e->getMessage(),
             ]);
 
-            throw MailerException::failedToSend($message->recipientEmail, $e);
+            throw MailerException::failedToSend($sendEmailMessage->recipientEmail, $e);
         }
     }
 }

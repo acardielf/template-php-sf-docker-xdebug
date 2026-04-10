@@ -15,7 +15,7 @@ use Stringable;
  *
  * @psalm-immutable
  */
-final class Uuid implements Stringable
+final readonly class Uuid implements Stringable
 {
     private const string UUID_PATTERN = '/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i';
 
@@ -24,7 +24,7 @@ final class Uuid implements Stringable
      *
      * @throws InvalidArgumentException When the value is not a valid UUID
      */
-    private function __construct(private readonly string $value)
+    private function __construct(private string $value)
     {
         $this->validate($value);
     }
@@ -48,14 +48,14 @@ final class Uuid implements Stringable
     {
         return new self(sprintf(
             '%04x%04x-%04x-%04x-%04x-%04x%04x%04x',
-            mt_rand(0, 0xffff),
-            mt_rand(0, 0xffff),
-            mt_rand(0, 0xffff),
-            mt_rand(0, 0x0fff) | 0x4000,
-            mt_rand(0, 0x3fff) | 0x8000,
-            mt_rand(0, 0xffff),
-            mt_rand(0, 0xffff),
-            mt_rand(0, 0xffff)
+            mt_rand(0, 0xFFFF),
+            mt_rand(0, 0xFFFF),
+            mt_rand(0, 0xFFFF),
+            mt_rand(0, 0x0FFF) | 0x4000,
+            mt_rand(0, 0x3FFF) | 0x8000,
+            mt_rand(0, 0xFFFF),
+            mt_rand(0, 0xFFFF),
+            mt_rand(0, 0xFFFF)
         ));
     }
 
@@ -94,7 +94,7 @@ final class Uuid implements Stringable
      */
     private function validate(string $value): void
     {
-        if (! preg_match(self::UUID_PATTERN, $value)) {
+        if (!preg_match(self::UUID_PATTERN, $value)) {
             throw new InvalidArgumentException(
                 sprintf('"%s" is not a valid UUID.', $value)
             );

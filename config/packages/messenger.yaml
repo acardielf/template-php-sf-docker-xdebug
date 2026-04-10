@@ -1,25 +1,33 @@
 framework:
     messenger:
+        default_bus: messenger.bus.default
+
         # Dead-letter queue — messages land here after exhausting retries
         failure_transport: failed
 
         transports:
+            # Synchronous transport — handlers run in the same process, no worker needed.
+            # Current default for all messages. Switch individual routes to async_high_priority
+            # or async when ready to introduce background processing.
+            sync: 'sync://'
+
             # High-priority queue: emails, notifications, time-sensitive tasks.
             # Worker: messenger:consume async_high_priority
+            # (kept ready — uncomment routing entries below to activate)
             async_high_priority:
                 dsn: '%env(MESSENGER_TRANSPORT_DSN)%'
                 options:
-                    # Redis stream name (separate from the general queue)
                     stream: messages_high_priority
                     group: symfony
                 retry_strategy:
                     max_retries: 5
-                    delay: 500        # ms before first retry
-                    multiplier: 2     # doubles each retry: 0.5s → 1s → 2s → 4s → 8s
-                    max_delay: 30000  # cap at 30s
+                    delay: 500
+                    multiplier: 2
+                    max_delay: 30000
 
             # General async queue: background tasks, reports, non-urgent operations.
             # Worker: messenger:consume async
+            # (kept ready — uncomment routing entries below to activate)
             async:
                 dsn: '%env(MESSENGER_TRANSPORT_DSN)%'
                 options:
@@ -40,8 +48,7 @@ framework:
                     max_retries: 0
 
         routing:
-            # Infrastructure async messages (email, notifications)
-            'App\Infrastructure\Messenger\Message\SendEmailMessage': async_high_priority
-
-            # Add your own message routings here:
-            # 'App\Application\Command\SomeHeavyCommand': async
+            # All messages run synchronously by default.
+            # To go async, move a route to async_high_priority or async:
+            # 'App\Infrastructure\Messenger\Message\SendEmailMessage': async_high_priority
+            'App\Infrastructure\Messenger\Message\SendEmailMessage': sync

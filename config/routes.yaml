@@ -6,5 +6,5 @@ controllers:
 
 # API documentation route
 nelmio_api_doc:
-    resource: '@NelmioApiDocBundle/config/routes.xml'
+    resource: '@NelmioApiDocBundle/config/routing/swaggerui.php'
     prefix: /api

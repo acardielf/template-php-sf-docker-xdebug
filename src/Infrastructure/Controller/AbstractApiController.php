@@ -40,9 +40,9 @@ abstract class AbstractApiController extends AbstractController
     /**
      * Returns a 404 Not Found response from a domain exception.
      */
-    protected function notFound(EntityNotFoundException $e): JsonResponse
+    protected function notFound(EntityNotFoundException $entityNotFoundException): JsonResponse
     {
-        return $this->json(['error' => $e->getMessage()], Response::HTTP_NOT_FOUND);
+        return $this->json(['error' => $entityNotFoundException->getMessage()], Response::HTTP_NOT_FOUND);
     }
 
     /**
@@ -50,13 +50,13 @@ abstract class AbstractApiController extends AbstractController
      *
      * Normalizes the violation list into a structured error body.
      */
-    protected function validationError(AbstractApiRequest $request): JsonResponse
+    protected function validationError(AbstractApiRequest $apiRequest): JsonResponse
     {
         /** @var array<int, array<string, string>> $errors */
         $errors = [];
 
         /** @var ConstraintViolationInterface $violation */
-        foreach ($request->getViolations() as $violation) {
+        foreach ($apiRequest->getViolations() as $violation) {
             $errors[] = [
                 'field' => (string) $violation->getPropertyPath(),
                 'message' => (string) $violation->getMessage(),

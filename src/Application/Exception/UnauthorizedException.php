@@ -17,8 +17,8 @@ final class UnauthorizedException extends ApplicationException
     /**
      * Creates an exception for a specific denied operation.
      *
-     * @param string $operation  The operation that was denied (e.g. "delete:order")
-     * @param string $actorId    Identifier of the actor who attempted it
+     * @param string $operation The operation that was denied (e.g. "delete:order")
+     * @param string $actorId   Identifier of the actor who attempted it
      */
     public static function forOperation(string $operation, string $actorId): self
     {

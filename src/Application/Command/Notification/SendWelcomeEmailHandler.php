@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Application\Command\Notification;
 
-use App\Application\Command\CommandInterface;
 use App\Application\Command\CommandHandlerInterface;
+use App\Application\Command\CommandInterface;
 use App\Infrastructure\Exception\MessagingException;
 use App\Infrastructure\Messenger\Message\SendEmailMessage;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
@@ -23,11 +23,14 @@ use Symfony\Component\Messenger\MessageBusInterface;
  * (MessagingException) rather than blocking the HTTP request waiting for
  * the SMTP server.
  */
+/**
+ * @implements CommandHandlerInterface<SendWelcomeEmailCommand>
+ */
 #[AsMessageHandler]
-final class SendWelcomeEmailHandler implements CommandHandlerInterface
+final readonly class SendWelcomeEmailHandler implements CommandHandlerInterface
 {
     public function __construct(
-        private readonly MessageBusInterface $asyncBus,
+        private MessageBusInterface $messageBus,
     ) {
     }
 
@@ -41,7 +44,7 @@ final class SendWelcomeEmailHandler implements CommandHandlerInterface
     public function __invoke(CommandInterface $command): void
     {
         /** @var SendWelcomeEmailCommand $command */
-        $message = new SendEmailMessage(
+        $sendEmailMessage = new SendEmailMessage(
             recipientEmail: $command->email,
             recipientName: $command->name,
             subject: 'Welcome! Your account is ready.',
@@ -53,7 +56,7 @@ final class SendWelcomeEmailHandler implements CommandHandlerInterface
         );
 
         try {
-            $this->asyncBus->dispatch($message);
+            $this->messageBus->dispatch($sendEmailMessage);
         } catch (ExceptionInterface $e) {
             throw MessagingException::failedToDispatch(SendEmailMessage::class, $e);
         }

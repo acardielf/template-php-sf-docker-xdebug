@@ -8,7 +8,6 @@ use App\Application\Command\CommandInterface;
 use App\Application\Service\CommandBusInterface;
 use Symfony\Component\Messenger\Exception\HandlerFailedException;
 use Symfony\Component\Messenger\MessageBusInterface;
-use Symfony\Component\Messenger\Stamp\HandledStamp;
 use Throwable;
 
 /**
@@ -17,10 +16,10 @@ use Throwable;
  * Wraps Symfony's MessageBus and translates between the application
  * port (CommandBusInterface) and the framework adapter.
  */
-final class SymfonyCommandBus implements CommandBusInterface
+final readonly class SymfonyCommandBus implements CommandBusInterface
 {
     public function __construct(
-        private readonly MessageBusInterface $commandBus
+        private MessageBusInterface $messageBus,
     ) {
     }
 
@@ -34,7 +33,7 @@ final class SymfonyCommandBus implements CommandBusInterface
     public function dispatch(CommandInterface $command): void
     {
         try {
-            $this->commandBus->dispatch($command);
+            $this->messageBus->dispatch($command);
         } catch (HandlerFailedException $e) {
             $previous = $e->getPrevious();
 

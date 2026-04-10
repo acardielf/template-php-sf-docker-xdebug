@@ -16,17 +16,17 @@ use App\Application\Command\CommandInterface;
  *
  * @psalm-immutable
  */
-final class SendWelcomeEmailCommand implements CommandInterface
+final readonly class SendWelcomeEmailCommand implements CommandInterface
 {
     /**
-     * @param non-empty-string $userId        The identifier of the registered user
-     * @param non-empty-string $email         The recipient email address
-     * @param non-empty-string $name          The recipient's display name
+     * @param non-empty-string $userId The identifier of the registered user
+     * @param non-empty-string $email  The recipient email address
+     * @param non-empty-string $name   The recipient's display name
      */
     public function __construct(
-        public readonly string $userId,
-        public readonly string $email,
-        public readonly string $name,
+        public string $userId,
+        public string $email,
+        public string $name,
     ) {
     }
 }

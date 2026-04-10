@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Application\Service;
 
 use App\Application\Command\CommandInterface;
+use Throwable;
 
 /**
  * Command bus port (interface).
@@ -20,7 +21,7 @@ interface CommandBusInterface
      *
      * @param CommandInterface $command The command to dispatch
      *
-     * @throws \Throwable When command handling fails
+     * @throws Throwable When command handling fails
      */
     public function dispatch(CommandInterface $command): void;
 }

@@ -4,22 +4,22 @@ declare(strict_types=1);
 
 namespace App\Tests\Functional\Controller;
 
+use App\Infrastructure\Controller\HealthCheckController;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Test;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+use Symfony\Component\HttpFoundation\Request;
 
-/**
- * @covers \App\Infrastructure\Controller\HealthCheckController
- */
+#[CoversClass(HealthCheckController::class)]
 final class HealthCheckControllerTest extends WebTestCase
 {
     #[Test]
     public function itReturnsHealthStatusOk(): void
     {
-        $client = static::createClient();
-        $client->request('GET', '/api/health');
+        $kernelBrowser = self::createClient();
+        $kernelBrowser->request(Request::METHOD_GET, '/api/health');
 
-        $response = $client->getResponse();
+        $response = $kernelBrowser->getResponse();
 
         self::assertResponseIsSuccessful();
         self::assertResponseHeaderSame('Content-Type', 'application/json');

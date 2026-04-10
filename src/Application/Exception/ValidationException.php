@@ -16,22 +16,15 @@ namespace App\Application\Exception;
 final class ValidationException extends ApplicationException
 {
     /**
-     * @var array<string, string> $violations Field → message map of validation failures
-     */
-    private readonly array $violations;
-
-    /**
      * @param array<string, string> $violations Field → message map
      */
-    public function __construct(array $violations)
+    public function __construct(private readonly array $violations)
     {
-        $this->violations = $violations;
-
         parent::__construct(
             sprintf('Validation failed: %s', implode(', ', array_map(
                 static fn (string $field, string $message): string => sprintf('%s — %s', $field, $message),
-                array_keys($violations),
-                $violations
+                array_keys($this->violations),
+                $this->violations
             )))
         );
     }

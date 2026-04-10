@@ -16,23 +16,23 @@ namespace App\Infrastructure\Messenger\Message;
  *
  * @psalm-immutable
  */
-final class SendEmailMessage
+final readonly class SendEmailMessage
 {
     /**
-     * @param non-empty-string              $recipientEmail  Destination email address
-     * @param non-empty-string              $recipientName   Display name of the recipient
-     * @param non-empty-string              $subject         Email subject line
-     * @param non-empty-string              $template        Twig template path relative to templates/email/
-     * @param array<string, mixed>          $context         Variables passed to the Twig template
-     * @param non-empty-string|null         $replyTo         Optional reply-to address
+     * @param non-empty-string      $recipientEmail Destination email address
+     * @param non-empty-string      $recipientName  Display name of the recipient
+     * @param non-empty-string      $subject        Email subject line
+     * @param non-empty-string      $template       Twig template path relative to templates/email/
+     * @param array<string, mixed>  $context        Variables passed to the Twig template
+     * @param non-empty-string|null $replyTo        Optional reply-to address
      */
     public function __construct(
-        public readonly string $recipientEmail,
-        public readonly string $recipientName,
-        public readonly string $subject,
-        public readonly string $template,
-        public readonly array $context = [],
-        public readonly ?string $replyTo = null,
+        public string $recipientEmail,
+        public string $recipientName,
+        public string $subject,
+        public string $template,
+        public array $context = [],
+        public ?string $replyTo = null,
     ) {
     }
 }

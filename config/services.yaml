@@ -7,9 +7,10 @@ services:
         autowire: true
         autoconfigure: true
         bind:
-            # Inject the high-priority bus into handlers that need to enqueue email/notifications.
-            # Use named autowiring: MessageBusInterface $asyncBus
-            Symfony\Component\Messenger\MessageBusInterface $asyncBus: '@messenger.bus.async_high_priority'
+            # $asyncBus resolves to the default bus. Routing in messenger.yaml determines
+            # whether a message runs sync or is queued. Change the routing entry there,
+            # not here, when you want to introduce async processing.
+            Symfony\Component\Messenger\MessageBusInterface $asyncBus: '@messenger.bus.default'
 
     # Register all classes in src/ as services
     App\:

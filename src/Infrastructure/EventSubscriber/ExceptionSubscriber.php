@@ -46,17 +46,15 @@ use Throwable;
  *   Unhandled:
  *     Any other Throwable              → 500 Internal Server Error (generic message)
  */
-final class ExceptionSubscriber implements EventSubscriberInterface
+final readonly class ExceptionSubscriber implements EventSubscriberInterface
 {
     public function __construct(
-        private readonly LoggerInterface $logger,
-        private readonly bool $debug = false,
+        private LoggerInterface $logger,
+        private bool $debug = false,
     ) {
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @return array<string, array{string, int}>
      */
     public static function getSubscribedEvents(): array
@@ -73,70 +71,70 @@ final class ExceptionSubscriber implements EventSubscriberInterface
      * Infrastructure and unhandled exceptions are logged as ERROR with full trace.
      * Domain and application exceptions are logged as WARNING (expected failures).
      */
-    public function onKernelException(ExceptionEvent $event): void
+    public function onKernelException(ExceptionEvent $exceptionEvent): void
     {
-        $exception = $event->getThrowable();
+        $throwable = $exceptionEvent->getThrowable();
 
         // Only handle requests that expect JSON
-        $request = $event->getRequest();
-        $acceptsJson = str_contains($request->headers->get('Accept', ''), 'application/json')
+        $request = $exceptionEvent->getRequest();
+        $acceptsJson = str_contains((string) $request->headers->get('Accept', ''), 'application/json')
             || str_starts_with($request->getPathInfo(), '/api');
 
-        if (! $acceptsJson) {
+        if (!$acceptsJson) {
             return;
         }
 
-        [$statusCode, $body] = $this->buildResponse($exception);
+        [$statusCode, $body] = $this->buildResponse($throwable);
 
-        $this->log($exception, $statusCode);
+        $this->log($throwable, $statusCode);
 
-        $event->setResponse(new JsonResponse($body, $statusCode));
+        $exceptionEvent->setResponse(new JsonResponse($body, $statusCode));
     }
 
     /**
      * Maps an exception to an HTTP status code and response body.
      *
-     * @param Throwable $exception The exception to translate
+     * @param Throwable $throwable The exception to translate
      *
      * @return array{int, array<string, mixed>} Tuple of [statusCode, responseBody]
      */
-    private function buildResponse(Throwable $exception): array
+    private function buildResponse(Throwable $throwable): array
     {
         return match (true) {
             // --- Domain layer ---
-            $exception instanceof EntityNotFoundException => [
+            $throwable instanceof EntityNotFoundException => [
                 Response::HTTP_NOT_FOUND,
-                $this->body('not_found', $exception->getMessage()),
+                $this->body('not_found', $throwable->getMessage()),
             ],
-            $exception instanceof DuplicateEntityException => [
+            $throwable instanceof DuplicateEntityException => [
                 Response::HTTP_CONFLICT,
-                $this->body('conflict', $exception->getMessage()),
+                $this->body('conflict', $throwable->getMessage()),
             ],
-            $exception instanceof BusinessRuleViolationException => [
+            $throwable instanceof BusinessRuleViolationException => [
                 Response::HTTP_UNPROCESSABLE_ENTITY,
-                $this->body('business_rule_violation', $exception->getMessage()),
+                $this->body('business_rule_violation', $throwable->getMessage()),
             ],
-            $exception instanceof DomainException => [
+            $throwable instanceof DomainException => [
                 Response::HTTP_BAD_REQUEST,
-                $this->body('domain_error', $exception->getMessage()),
+                $this->body('domain_error', $throwable->getMessage()),
             ],
 
             // --- Application layer ---
-            $exception instanceof UnauthorizedException => [
+            $throwable instanceof UnauthorizedException => [
                 Response::HTTP_FORBIDDEN,
-                $this->body('forbidden', $exception->getMessage()),
+                $this->body('forbidden', $throwable->getMessage()),
             ],
-            $exception instanceof ValidationException => [
+            $throwable instanceof ValidationException => [
                 Response::HTTP_UNPROCESSABLE_ENTITY,
-                $this->body('validation_error', $exception->getMessage(), ['violations' => $exception->getViolations()]),
+                $this->body('validation_error', $throwable->getMessage(), ['violations' => $throwable->getViolations()]),
             ],
-            $exception instanceof ApplicationException => [
+            $throwable instanceof ApplicationException => [
                 Response::HTTP_BAD_REQUEST,
-                $this->body('application_error', $exception->getMessage()),
+                $this->body('application_error', $throwable->getMessage()),
             ],
 
             // --- Infrastructure layer — NEVER expose internals to the client ---
-            $exception instanceof InfrastructureException => [
+            $throwable instanceof InfrastructureException => [
                 Response::HTTP_INTERNAL_SERVER_ERROR,
                 $this->body('server_error', 'An internal error occurred. Please try again later.'),
             ],
@@ -144,7 +142,7 @@ final class ExceptionSubscriber implements EventSubscriberInterface
             // --- Unhandled fallback ---
             default => [
                 Response::HTTP_INTERNAL_SERVER_ERROR,
-                $this->body('server_error', $this->debug ? $exception->getMessage() : 'An unexpected error occurred.'),
+                $this->body('server_error', $this->debug ? $throwable->getMessage() : 'An unexpected error occurred.'),
             ],
         };
     }
@@ -166,22 +164,22 @@ final class ExceptionSubscriber implements EventSubscriberInterface
     /**
      * Logs the exception with appropriate severity and context.
      *
-     * @param Throwable $exception  The exception to log
+     * @param Throwable $throwable  The exception to log
      * @param int       $statusCode The resolved HTTP status code
      */
-    private function log(Throwable $exception, int $statusCode): void
+    private function log(Throwable $throwable, int $statusCode): void
     {
         $context = [
-            'exception_class' => $exception::class,
+            'exception_class' => $throwable::class,
             'status_code' => $statusCode,
-            'file' => $exception->getFile(),
-            'line' => $exception->getLine(),
+            'file' => $throwable->getFile(),
+            'line' => $throwable->getLine(),
         ];
 
         if ($statusCode >= Response::HTTP_INTERNAL_SERVER_ERROR) {
-            $this->logger->error($exception->getMessage(), $context);
+            $this->logger->error($throwable->getMessage(), $context);
         } else {
-            $this->logger->warning($exception->getMessage(), $context);
+            $this->logger->warning($throwable->getMessage(), $context);
         }
     }
 }

@@ -10,7 +10,7 @@ This file defines the conventions, architecture, and toolchain for this project.
 | Layer                                 | Technology                                       |
 |---------------------------------------|--------------------------------------------------|
 | Language                              | PHP 8.5 (strict_types, strong typing everywhere) |
-| Framework                             | Symfony 7.3                                      |
+| Framework                             | Symfony 8                                        |
 | ORM                                   | Doctrine ORM 3.x                                 |
 | Queue                                 | Symfony Messenger + Redis                        |
 | Mailer                                | Symfony Mailer + Mailpit (dev)                   |
@@ -22,8 +22,7 @@ This file defines the conventions, architecture, and toolchain for this project.
 | Static analysis                       | PHPStan level 9                                  |
 | Code style                            | PHP CS Fixer (PSR-12 + Symfony rules)            |
 | Refactoring                           | Rector (auto-upgrade + code quality)             |
-| Testing (unit/integration/functional) | PHPUnit 11.5                                     |
-| Testing (BDD)                         | Behat 3.x                                        |
+| Testing (unit/integration/functional) | PHPUnit 13.x                                     |
 | Code quality                          | SonarQube (community, dockerized)                |
 | CI/CD                                 | GitHub Actions                                   |
 
@@ -66,6 +65,11 @@ src/
 - All business logic lives in Domain entities or Domain Services.
 - Infrastructure adapters implement Domain ports (interfaces).
 - Repositories return **Domain** entities/value objects, never Doctrine entities directly (use mappers).
+- Prefer UUID to sequential IDs.
+- Map ORM with XMLEntityMappings, never with annotations or attributes in the Domain layer.
+- All entites must have a `createdAt` and `updatedAt` timestamp
+- `createdAt` is set automatically by Doctrine, `updatedAt` is updated on every change using ORM lifecycle callbacks.
+- Use DTOs for input/output, never expose Domain entities directly to controllers or API responses. Map them in the application layer or controllers as needed.
 
 ---
 
@@ -144,14 +148,8 @@ public function create(CreateUserRequest $request): JsonResponse { ... }
 - **Unit tests** (`tests/Unit/`) — test domain classes in isolation; no Symfony, no DB.
 - **Integration tests** (`tests/Integration/`) — test infrastructure adapters against the `app_test` PostgreSQL database.
 - **Functional tests** (`tests/Functional/`) — test HTTP controllers via `WebTestCase`.
-- All tests use `#[Test]`, `#[CoversClass]`, `#[DataProvider]` attributes (PHPUnit 11 style).
+- All tests use `#[Test]`, `#[CoversClass]`, `#[DataProvider]` attributes (PHPUnit 13 style).
 - Target: **≥ 80% coverage**. Coverage enforced in CI.
-
-### Behat
-
-- BDD scenarios live in `features/`.
-- Feature files use the Given/When/Then format in plain English.
-- Context classes live in `features/contexts/` and `features/bootstrap/`.
 
 ### Running tests
 
@@ -161,9 +159,6 @@ composer test
 
 # With coverage
 composer test:coverage
-
-# Behat only
-composer test:behat
 
 # PHPStan
 composer phpstan
@@ -189,7 +184,7 @@ composer quality
 ## 6. Docker Environments
 
 **SQLite is not used anywhere.** PostgreSQL runs in every environment, including local development and CI.
-The `app_test` database (created automatically by `.docker/postgres/init.sql`) is used by PHPUnit and Behat.
+The `app_test` database (created automatically by `.docker/postgres/init.sql`) is used by PHPUnit.
 
 ### Standard (PostgreSQL + Redis + Mailpit)
 
@@ -387,7 +382,6 @@ composer quality:fix   # runs cs:fix + rector:fix
 assets/          Frontend JS and CSS (AssetMapper)
 bin/             Symfony console + utility scripts
 config/          Symfony configuration (packages, routes, services)
-features/        Behat scenarios and contexts
 public/          Web root (index.php only)
 src/
   Application/   Commands, Queries, Buses (ports)
